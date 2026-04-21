@@ -5,10 +5,16 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function recognizeMistake(base64Image: string): Promise<OCRResult> {
   const model = "gemini-3-flash-preview";
+  
+  // Detect mime type and extract raw base64 data
+  const mimeMatch = base64Image.match(/^data:([^;]+);base64,(.+)$/);
+  const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
+  const rawData = mimeMatch ? mimeMatch[2] : base64Image;
+
   const imagePart = {
     inlineData: {
-      mimeType: "image/jpeg", // Assuming JPEG for now, will handle dynamically if possible
-      data: base64Image.split(",")[1] || base64Image,
+      mimeType,
+      data: rawData,
     },
   };
   
